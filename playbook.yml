@@ -1,0 +1,28 @@
+- hosts: dev
+  name: First
+  gather_facts: false
+  pre_tasks:
+    - name: Unlock SSH key "{{ hostvars[inventory_hostname].ssh_key_file | expandvars }}"
+      ansible.builtin.expect:
+        command: ssh-add "{{ hostvars[inventory_hostname].ssh_key_file | expandvars }}"
+        responses:
+          passphrase: "{{ hostvars[inventory_hostname].ssh_key_password }}"
+      delegate_to: localhost
+      become: false
+      changed_when: false
+      no_log: true
+    - name: Gathering facts
+      ansible.builtin.setup:
+  tasks:
+    - name: Ping google
+      ansible.builtin.command: ping -c 5 {{ ping_host }}
+      become: false
+      changed_when: false
+  post_tasks:
+    - name: Lock SSH key "{{ hostvars[inventory_hostname].ssh_key_file | expandvars }}"
+      ansible.builtin.command: ssh-add -d "{{ hostvars[inventory_hostname].ssh_key_file | expandvars }}"
+      delegate_to: localhost
+      become: false
+      changed_when: false
+      register: result
+      failed_when: result.rc != 0
