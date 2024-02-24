@@ -1,0 +1,6 @@
+---
+collections:
+  - source: ./sfey/hierarch
+    type: dir
+  - name: community.postgresql
+  - name: community.crypto

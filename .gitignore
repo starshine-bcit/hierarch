@@ -1,1 +1,4 @@
 .vault_pass
+*.pem
+*.key
+collections/
