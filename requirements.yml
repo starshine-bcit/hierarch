@@ -4,3 +4,6 @@ collections:
     type: dir
   - name: community.postgresql
   - name: community.crypto
+  - name: geerlingguy.certbot
+  - name: nginxinc.nginx
+  - name: nginxinc.nginx_config

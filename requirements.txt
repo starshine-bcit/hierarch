@@ -1,0 +1,5 @@
+pexpect
+psycopg2-binary
+jmespath
+lxml
+netaddr

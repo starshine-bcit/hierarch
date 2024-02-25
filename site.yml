@@ -1,19 +1,8 @@
 ---
-- hosts: localhost
-  name: Generate certificates
+- name: Unlock ssh key
+  hosts: localhost
   gather_facts: false
   tasks:
-    - name: Generate postgres SSL privkey
-      community.crypto.openssl_privatekey:
-        path: "{{ kc_local_key_file }}"
-        type: Ed25519
-      become: false
-    - name: Generate postgres SSL certificate
-      community.crypto.x509_certificate:
-        path: "{{ kc_local_cert_file }}"
-        privatekey_path: "{{ kc_local_key_file }}"
-        provider: selfsigned
-      become: false
     - name: Unlock SSH key "{{ ssh_key_file | expandvars }}"
       ansible.builtin.expect:
         command: ssh-add "{{ ssh_key_file | expandvars }}"
@@ -22,15 +11,23 @@
       become: false
       changed_when: false
       no_log: true
-- hosts: admin
-  name: Configure admin server
+- name: Configure admin server
+  hosts: admin
   tasks:
     - name: Give postgres role
       ansible.builtin.import_role:
         name: sfey.hierarch.postgres
       become: true
-- hosts: localhost
-  name: Clean up
+    - name: Give letsencryptnginx role
+      ansible.builtin.import_role:
+        name: sfey.hierarch.letsencryptnginx
+      become: true
+    - name: Give keycloak role
+      ansible.builtin.import_role:
+        name: sfey.hierarch.keycloak
+      become: true
+- name: Clean up
+  hosts: localhost
   gather_facts: false
   tasks:
     - name: Lock SSH key "{{ ssh_key_file | expandvars }}"

@@ -1,3 +1,7 @@
 ---
+ca_local_key_file: "certs/ca.key"
+ca_local_cert_file: "certs/ca.pem"
 kc_local_cert_file: "certs/postgres.pem"
 kc_local_key_file: "certs/postgres.key"
+kc_common_name: localhost
+postgres_common_name: localhost

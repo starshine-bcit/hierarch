@@ -1,3 +1,47 @@
 ---
 kc_db_name: keycloak
-kc_db_origin: 127.0.0.1
+kc_db_origin: admin.hierarch.live
+kc_realm_name: hierarch
+kc_db_host: localhost
+kc_public_hostname: admin.hierarch.live
+kc_admin_url: http://admin.hierarch.live:7000/admin
+kc_public_url: http://admin.hierarch.live:7000
+kc_hostname_path: "/"
+kc_admin_hostname: admin.hierarch.live
+kc_debug: true
+kc_hostname_port: 7000
+kc_http_port: 7000
+kc_https_port: 7001
+kc_http_host: "0.0.0.0"
+kc_https_enabled: false
+kc_proxy_mode: edge
+domain_name: admin.hierarch.live
+certbot_admin_email: fey.sasha@gmail.com
+certbot_certs:
+  - domains:
+      - "{{ domain_name }}"
+      - "www.{{ domain_name }}"
+certbot_create_standalone_stop_services:
+  - nginx
+  - keycloak
+certbot_auto_renew_user: "{{ ansible_user | default(lookup('env', 'USER')) }}"
+nginx_upstreams:
+  - name: keycloak
+    servers:
+      - address: 127.0.0.1:7000
+nginx_main_locations:
+  - location: /admin # restrict
+    proxy:
+      pass: http://keycloak
+  - location: /js # restrict
+    proxy:
+      pass: http://keycloak
+  - location: /realms
+    proxy:
+      pass: http://keycloak
+  - location: /resources
+    proxy:
+      pass: http://keycloak
+  - location: /robots.txt
+    proxy:
+      pass: http://keycloak

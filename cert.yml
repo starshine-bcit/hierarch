@@ -1,0 +1,83 @@
+---
+- name: Generate self-signed certs
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create protected private key
+      community.crypto.openssl_privatekey:
+        path: "{{ ca_local_key_file }}"
+        cipher: auto
+        passphrase: "{{ ca_key_pass }}"
+        type: Ed25519
+    - name: Create certificate signing request (CSR) for CA certificate
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: "{{ ca_local_key_file }}"
+        privatekey_passphrase: "{{ ca_key_pass }}"
+        common_name: Hierarch CA
+        use_common_name_for_san: false
+        organization_name: Hierarch
+        organizational_unit_name: None
+        country_name: CA
+        state_or_province_name: SomeState
+        locality_name: SomePlace
+        basic_constraints:
+          - 'CA:TRUE'
+        basic_constraints_critical: true
+        key_usage:
+          - keyCertSign
+        key_usage_critical: true
+      register: ca_csr
+      become: false
+    - name: Create self-signed CA certificate from CSR
+      community.crypto.x509_certificate:
+        path: "{{ ca_local_cert_file }}"
+        csr_content: "{{ ca_csr.csr }}"
+        privatekey_path: "{{ ca_local_key_file }}"
+        privatekey_passphrase: "{{ ca_key_pass }}"
+        provider: selfsigned
+      become: false
+    - name: Generate postgres SSL privkey
+      community.crypto.openssl_privatekey:
+        path: "{{ kc_local_key_file }}"
+        type: Ed25519
+      become: false
+    - name: Create certificate signing request (CSR) for new certificate
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: "{{ kc_local_key_file }}"
+        use_common_name_for_san: false
+        organization_name: Hierarch
+        organizational_unit_name: None
+        country_name: CA
+        state_or_province_name: SomeState
+        locality_name: SomePlace
+        basic_constraints:
+          - 'CA:FALSE'
+        basic_constraints_critical: true
+        key_usage:
+          - digitalSignature
+          - keyAgreement
+        extended_key_usage:
+          - clientAuth
+        key_usage_critical: true
+        subject_alt_name:
+          - "DNS:localhost"
+        common_name: "{{ kc_common_name }}"
+      register: csr
+      become: false
+    - name: Sign certificate with our CA
+      community.crypto.x509_certificate_pipe:
+        csr_content: "{{ csr.csr }}"
+        provider: ownca
+        ownca_path: "{{ ca_local_cert_file }}"
+        ownca_privatekey_path: "{{ ca_local_key_file }}"
+        ownca_privatekey_passphrase: "{{ ca_key_pass }}"
+        ownca_not_after: +365d  # valid for one year
+        ownca_not_before: "-1d"  # valid since yesterday
+      register: certificate
+      become: false
+    - name: Write certificate file out
+      ansible.builtin.copy:
+        dest: "{{ kc_local_cert_file }}"
+        content: "{{ certificate.certificate }}"
+        mode: '640'
+      become: false
