@@ -16,15 +16,14 @@ kc_http_host: "0.0.0.0"
 kc_https_enabled: false
 kc_proxy_mode: edge
 domain_name: admin.hierarch.live
-certbot_admin_email: fey.sasha@gmail.com
-certbot_certs:
+admin_email: fey.sasha@gmail.com
+certs:
   - domains:
       - "{{ domain_name }}"
       - "www.{{ domain_name }}"
-certbot_create_standalone_stop_services:
+stop_services:
   - nginx
   - keycloak
-certbot_auto_renew_user: "{{ ansible_user | default(lookup('env', 'USER')) }}"
 nginx_upstreams:
   - name: keycloak
     servers:
