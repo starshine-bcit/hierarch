@@ -1,0 +1,9 @@
+---
+- name: Give letsencryptnginx role
+  ansible.builtin.import_role:
+    name: sfey.hierarch.letsencryptnginx
+  become: true
+- name: Give forgejo role
+  ansible.builtin.import_role:
+    name: sfey.hierarch.forgejo
+  become: true

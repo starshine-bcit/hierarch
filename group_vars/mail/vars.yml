@@ -1,0 +1,4 @@
+hostname: mail.hierarch.live
+additional_san:
+  - www.mail.hierarch.live
+acme_contact: fey.sasha@gmail.com

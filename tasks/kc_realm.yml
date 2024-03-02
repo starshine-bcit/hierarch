@@ -1,0 +1,113 @@
+---
+- name: Add keycloak realm
+  community.general.keycloak_realm:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: master
+    auth_username: "{{ kc_root_user }}"
+    auth_password: "{{ kc_root_pass }}"
+    id: "{{ kc_realm }}"
+    realm: "{{ kc_realm }}"
+    state: present
+    enabled: true
+- name: Add new realm admin role
+  community.general.keycloak_role:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: master
+    auth_username: "{{ kc_root_user }}"
+    auth_password: "{{ kc_root_pass }}"
+    realm: "{{ kc_realm }}"
+    name: "{{ kc_admin_role }}"
+    description: "Admins for {{ kc_realm }}"
+    state: present
+    composite: true
+    composites:
+      - name: realm-admin
+        client_id: realm-management
+        state: present
+- name: Create admin group for later mapping
+  community.general.keycloak_group:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: master
+    auth_username: "{{ kc_root_user }}"
+    auth_password: "{{ kc_root_pass }}"
+    realm: "{{ kc_realm }}"
+    state: present
+    name: "{{ kc_admin_role }}"
+- name: Add realm role-mapping for realm admin
+  community.general.keycloak_realm_rolemapping:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: master
+    auth_username: "{{ kc_root_user }}"
+    auth_password: "{{ kc_root_pass }}"
+    realm: "{{ kc_realm }}"
+    group_name: "{{ kc_admin_role }}"
+    state: present
+    roles:
+      - name: "{{ kc_admin_role }}"
+- name: Add new realm admin user
+  community.general.keycloak_user:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: master
+    auth_username: "{{ kc_root_user }}"
+    auth_password: "{{ kc_root_pass }}"
+    realm: "{{ kc_realm }}"
+    username: "{{ kc_admin_user }}"
+    enabled: true
+    state: present
+    credentials:
+      - type: password
+        value: "{{ kc_admin_pass }}"
+    groups:
+      - name: "{{ kc_admin_role }}"
+        state: present
+- name: Create several groups for later mapping
+  community.general.keycloak_group:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: "{{ kc_realm }}"
+    auth_username: "{{ kc_admin_user }}"
+    auth_password: "{{ kc_admin_pass }}"
+    realm: "{{ kc_realm }}"
+    state: present
+    name: "{{ item }}"
+  with_list: "{{ kc_groups }}"
+- name: Add mailcow keycloak client
+  community.general.keycloak_client:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: "{{ kc_realm }}"
+    auth_username: "{{ kc_admin_user }}"
+    auth_password: "{{ kc_admin_pass }}"
+    realm: "{{ kc_realm }}"
+    client_id: mailcow
+    name: mailcow
+    client_authenticator_type: client-secret
+    secret: "{{ mailcow_client_secret }}"
+    authorization_services_enabled: false
+    standard_flow_enabled: true
+    state: present
+    enabled: true
+    root_url: "{{ mail_url }}"
+    base_url: "{{ mail_url }}"
+    redirect_uris:
+      - "{{ mail_url }}"
+    direct_access_grants_enabled: false
+    service_accounts_enabled: true
+    protocol: openid-connect
+    public_client: false
+    protocol_mappers:
+      - config:
+          access.token.claim: false
+          access.token.introspection: false
+          claim.name: mailcow_template
+          user.attribute: mailcow_template
+          userinfo.token.claim: true
+        consentRequired: false
+        name: mailcow_template
+        protocol: openid-connect
+        protocolMapper: oidc-usermodel-attribute-mapper
