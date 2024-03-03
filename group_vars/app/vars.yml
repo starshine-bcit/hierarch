@@ -3,8 +3,9 @@
 # fj_pass:
 # fj_secret_key:
 # fj_internal_key:
+fj_download_link: "https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-linux-amd64"
 fj_email: contact@hierarch.live
-fj_version: "1.21.6-0-arm64-rootless"
+fj_version: "1.21.6-0-amd64"
 fj_image: "codeberg.org/forgejo/forgejo"
 fj_mailer_from: "noreply@hierarch.live"
 fj_host: "git.hierarch.live"
@@ -15,18 +16,12 @@ smtp_port: "587"
 smtp_host: "smtp.mailgun.org"
 smtp_type: "smtp+starttls"
 fj_env_default: |
-  USER_UID=1000
-  USER_GID=1000
   LFS_START_SERVER=true
   FORGEJO__security__INSTALL_LOCK=true
   FORGEJO__server__DOMAIN={{ fj_host }}
   FORGEJO__server__SSH_DOMAIN={{ fj_host }}
-  FORGEJO__server__ROOT_URL=https://{{ fj_host }}/
+  FORGEJO__server__ROOT_URL=https://{{ fj_host }}
   FORGEJO__server__ENABLE_ACME=false
-  FORGEJO__server__HTTP_PORT={{ fj_http_port }}
-  FORGEJO__server__SSH_PORT={{ fj_ssh_port }}
-  FORGEJO__repository__ENABLE_PUSH_CREATE_USER=true
-  FORGEJO__repository__ENABLE_PUSH_CREATE_ORG=true
   FORGEJO__repository__DEFAULT_REPO_UNITS=repo.code,repo.releases,repo.issues,repo.pulls,repo.wiki,repo.projects,repo.packages,repo.actions
   FORGEJO__actions__ENABLED=true
   FORGEJO__service__DEFAULT_KEEP_EMAIL_PRIVATE=false
@@ -50,7 +45,7 @@ fj_env_default: |
   FORGEJO__session__COOKIE_NAME=hrgitsess
   FORGEJO__session__COOKIE_SECURE=true
   FORGEJO__session__SAME_SITE=strict
-  FORGEJO__APP_NAME=Hierarch Forgejo
+  FORGEJO__APP_NAME=
   FORGEJO__openid__ENABLE_OPENID_SIGNIN=true
   FORGEJO__openid__ENABLE_OPENID_SIGNUP=true
   FORGEJO__openid__WHITELISTED_URIS={{ db_hostname }}
@@ -59,10 +54,10 @@ fj_env_default: |
   FORGEJO__oauth2_client__ENABLE_AUTO_REGISTRATION=true
   FORGEJO__oauth2_client__UPDATE_AVATAR=true
   FORGEJO__oauth2__ENABLED=false
-  FORGEJO__database__DB_TYPE: postgres
+  FORGEJO__database__DB_TYPE=postgres
   FORGEJO__database__HOST={{ db_hostname }}:5432
   FORGEJO__database__NAME=forgejo
-  FORGEJO__database__USER={{ jf_db_user }}
+  FORGEJO__database__USER={{ fj_db_user }}
   FORGEJO__database__PASSWD={{ fj_db_pass }}
   FORGEJO__database__SCHEMA=forgejo
   FORGEJO__database__SSL_MODE=require
@@ -70,7 +65,6 @@ fj_env_default: |
   FORGEJO__security__INTERNAL_TOKEN={{ fj_internal_key }}
   FORGEJO__mailer__USER={{ fj_smtp_user }}
   FORGEJO__mailer__PASSWD={{ fj_smtp_pass }}
-  --
 domain_name: app.hierarch.live
 server_names:
   - "{{ fj_host }}"
