@@ -180,3 +180,4 @@ http_templates:
       servers: "{{ servers }}"
 nginx_confs:
   - /etc/nginx/conf.d/default.conf
+wk_base_url: "https://wiki.hierarch.live"

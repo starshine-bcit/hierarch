@@ -21,6 +21,8 @@ oidc_id: forgejo
 db_hostname: localhost
 db_is_local: true
 mx_host: "chat.hierarch.live"
+wk_db_name: wikijs
+wk_db_user: hrwikijs
 db_databases:
   - name: forgejo
     user: "{{ fj_db_user }}"
@@ -38,6 +40,14 @@ db_databases:
     ipv6_origin: ""
     collate: C
     public_schema: true
+  - name: "{{ wk_db_name }}"
+    user: "{{ wk_db_user }}"
+    pass: "{{ wk_db_pass }}"
+    schema: "{{ wk_db_name }}"
+    origin: "127.0.0.1"
+    ipv6_origin: ""
+    collate: ""
+    public_schema: false
 server_names:
   - "{{ fj_host }}"
 admin_email: fey.sasha@gmail.com
@@ -95,12 +105,12 @@ nginx_wk_locations:
   - location: /
     proxy:
       pass: http://wikijs
-postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0001/cert.pem"
-postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}-0001/privkey.pem"
+postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/cert.pem"
+postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/privkey.pem"
 postgres_local_cert_file: /etc/postgresql/15/main/cert.pem
 postgres_local_key_file: /etc/postgresql/15/main/privkey.pem
-cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0001/fullchain.pem"
-cert_key: "/etc/letsencrypt/live/{{ domain_name }}-0001/privkey.pem"
+cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/fullchain.pem"
+cert_key: "/etc/letsencrypt/live/{{ domain_name }}-0002/privkey.pem"
 servers_forgejo:
   - core:
       listen:
@@ -242,3 +252,4 @@ turn_allowed_peer_ip: "104.219.236.22"
 wk_host: "wiki.hierarch.live"
 wk_home_dir: "/srv/wikijs"
 wk_base_dir: "{{ wk_home_dir }}/wiki"
+kc_name: keycloak

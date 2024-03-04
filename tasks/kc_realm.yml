@@ -245,3 +245,27 @@
         name: synapse_user
         protocol: openid-connect
         protocolMapper: oidc-usermodel-attribute-mapper
+- name: Add wikijs keycloak client
+  community.general.keycloak_client:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: "{{ kc_realm }}"
+    auth_username: "{{ kc_admin_user }}"
+    auth_password: "{{ kc_admin_pass }}"
+    realm: "{{ kc_realm }}"
+    client_id: wikijs
+    name: wikijs
+    client_authenticator_type: client-secret
+    secret: "{{ wk_client_secret }}"
+    authorization_services_enabled: false
+    standard_flow_enabled: true
+    state: present
+    enabled: true
+    root_url: "{{ wk_base_url }}"
+    base_url: "{{ wk_base_url }}"
+    redirect_uris:
+      - "{{ wk_base_url }}/login/*"
+    direct_access_grants_enabled: false
+    service_accounts_enabled: true
+    protocol: openid-connect
+    public_client: false
