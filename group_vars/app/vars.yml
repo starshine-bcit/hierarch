@@ -192,3 +192,4 @@ mx_user: hr-synapse
 mx_db_user: hrsynapse
 mx_db_name: synapse
 el_host: "element.hierarch.live"
+turn_allowed_peer_ip: "104.219.236.22"
