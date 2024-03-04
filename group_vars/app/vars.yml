@@ -49,8 +49,8 @@ certs:
       - "www.{{ fj_host }}"
       - "{{ mx_host }}"
       - "www.{{ mx_host }}"
-      - "{{ el_host }}"
-      - "www.{{ el_host }}"
+      - "{{ wk_host }}"
+      - "www.{{ wk_host }}"
 stop_services:
   - nginx
 upstreams_forgejo:
@@ -61,14 +61,40 @@ upstreams_synapse:
   - name: synapse
     servers:
       - address: localhost:7002
+upstreams_wiki:
+  - name: wikijs
+    servers:
+      - address: localhost:7003
 nginx_fj_locations:
   - location: /
     proxy:
       pass: http://forgejo
 nginx_mx_locations:
-  - location: /
+  - location: '~ ^(/_matrix|/_synapse/client)'
     proxy:
       pass: http://synapse
+  - location: /
+    core:
+      root: /usr/share/element-web
+  - location: "= /.well-known/matrix/server"
+    proxy:
+      pass: http://synapse
+  - location: "= /.well-known/matrix/client"
+    rewrite:
+      return:
+        code: 200
+        text: "'{\"m.homeserver\": {\"base_url\": \"https://{{ mx_host }}\"}}'"
+    core:
+      default_type: application/json
+    headers:
+      add_headers:
+        - name: Access-Control-Allow-Origin
+          value: '*'
+          always: true
+nginx_wk_locations:
+  - location: /
+    proxy:
+      pass: http://wikijs
 postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0001/cert.pem"
 postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}-0001/privkey.pem"
 postgres_local_cert_file: /etc/postgresql/15/main/cert.pem
@@ -105,6 +131,21 @@ servers_synapse:
           http2: true
       server_name: "{{ mx_host }}"
     locations: "{{ nginx_mx_locations }}"
+servers_wiki:
+  - core:
+      listen:
+        - address: "0.0.0.0"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+        - address: "[::]"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+      server_name: "{{ wk_host }}"
+    locations: "{{ nginx_wk_locations }}"
 http_templates:
   - backup: true
     deployment_location: /etc/nginx/conf.d/default.conf
@@ -183,13 +224,21 @@ http_templates:
     config:
       upstreams: "{{ upstreams_synapse }}"
       servers: "{{ servers_synapse }}"
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/wiki.conf
+    config:
+      upstreams: "{{ upstreams_wiki }}"
+      servers: "{{ servers_wiki }}"
 nginx_confs:
   - /etc/nginx/conf.d/default.conf
   - /etc/nginx/conf.d/forgejo.conf
   - /etc/nginx/conf.d/synapse.conf
+  - /etc/nginx/conf.d/wiki.conf
 mx_config_dir: "/etc/matrix-synapse/conf.d"
 mx_user: hr-synapse
 mx_db_user: hrsynapse
 mx_db_name: synapse
-el_host: "element.hierarch.live"
 turn_allowed_peer_ip: "104.219.236.22"
+wk_host: "wiki.hierarch.live"
+wk_home_dir: "/srv/wikijs"
+wk_base_dir: "{{ wk_home_dir }}/wiki"
