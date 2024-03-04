@@ -1,7 +1,14 @@
 ---
+# add these in vault.yml
+# ansible_become_pass:
+# ssh_key_file:
+# ssh_key_pass:
+# fj_db_pass:
+# fj_client_secret:
+# begin normal variables
 ca_local_key_file: "certs/ca.key"
 ca_local_cert_file: "certs/ca.pem"
 kc_local_cert_file: "certs/postgres.pem"
 kc_local_key_file: "certs/postgres.key"
-db_hostname: admin.hierarch.live
+kc_hostname: admin.hierarch.live
 fj_db_user: hrforgejo
