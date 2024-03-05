@@ -269,3 +269,27 @@
     service_accounts_enabled: true
     protocol: openid-connect
     public_client: false
+- name: Add cryptpad keycloak client
+  community.general.keycloak_client:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ kc_admin_url }}"
+    auth_realm: "{{ kc_realm }}"
+    auth_username: "{{ kc_admin_user }}"
+    auth_password: "{{ kc_admin_pass }}"
+    realm: "{{ kc_realm }}"
+    client_id: cryptpad
+    name: cryptpad
+    client_authenticator_type: client-secret
+    secret: "{{ doc_client_secret }}"
+    authorization_services_enabled: false
+    standard_flow_enabled: true
+    state: present
+    enabled: true
+    root_url: "{{ doc_base_url }}"
+    base_url: "{{ doc_base_url }}"
+    redirect_uris:
+      - "{{ doc_base_url }}/ssoauth"
+    direct_access_grants_enabled: false
+    service_accounts_enabled: true
+    protocol: openid-connect
+    public_client: false

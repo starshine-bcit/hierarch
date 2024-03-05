@@ -61,6 +61,12 @@ certs:
       - "www.{{ mx_host }}"
       - "{{ wk_host }}"
       - "www.{{ wk_host }}"
+      - "{{ hr_host }}"
+      - "www.{{ hr_host }}"
+      - "{{ doc_host }}"
+      - "www.{{ doc_host }}"
+      - "{{ sandbox_host }}"
+      - "www.{{ sandbox_host }}"
 stop_services:
   - nginx
 upstreams_forgejo:
@@ -75,20 +81,33 @@ upstreams_wiki:
   - name: wikijs
     servers:
       - address: localhost:7003
+upstreams_doc:
+  - name: cryptpad
+    servers:
+      - address: localhost:7004
+  - name: cryptsandbox
+    servers:
+      - address: localhost:7005
+  - name: cryptwebsocket
+    servers:
+      - address: localhost:7006
 nginx_fj_locations:
   - location: /
     proxy:
       pass: http://forgejo
+      http_version: 1.1
 nginx_mx_locations:
   - location: '~ ^(/_matrix|/_synapse/client)'
     proxy:
       pass: http://synapse
+      http_version: 1.1
   - location: /
     core:
       root: /usr/share/element-web
   - location: "= /.well-known/matrix/server"
     proxy:
       pass: http://synapse
+      http_version: 1.1
   - location: "= /.well-known/matrix/client"
     rewrite:
       return:
@@ -105,12 +124,31 @@ nginx_wk_locations:
   - location: /
     proxy:
       pass: http://wikijs
-postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/cert.pem"
-postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/privkey.pem"
+      http_version: 1.1
+nginx_doc_locations:
+  - location: /
+    proxy:
+      pass: http://cryptpad
+      set_header:
+        - field: Upgrade
+          value: $http_upgrade
+        - field: Connection
+          value: upgrade
+      http_version: 1.1
+  - location: '^~ /cryptpad_websocket'
+    proxy:
+      pass: http://cryptwebsocket
+      set_header:
+        - field: Upgrade
+          value: $http_upgrade
+        - field: Connection
+          value: upgrade
+postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0003/cert.pem"
+postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}-0003/privkey.pem"
 postgres_local_cert_file: /etc/postgresql/15/main/cert.pem
 postgres_local_key_file: /etc/postgresql/15/main/privkey.pem
-cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/fullchain.pem"
-cert_key: "/etc/letsencrypt/live/{{ domain_name }}-0002/privkey.pem"
+cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0003/fullchain.pem"
+cert_key: "/etc/letsencrypt/live/{{ domain_name }}-0003/privkey.pem"
 servers_forgejo:
   - core:
       listen:
@@ -156,10 +194,32 @@ servers_wiki:
           http2: true
       server_name: "{{ wk_host }}"
     locations: "{{ nginx_wk_locations }}"
+servers_doc:
+  - core:
+      listen:
+        - address: "0.0.0.0"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+        - address: "[::]"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+      server_name: "{{ doc_host }} {{ sandbox_host }}"
+    locations: "{{ nginx_doc_locations }}"
+    # headers:
+    #   add_headers:
+    #     - name: Strict-Transport-Security
+    #       value: "\"max-age=63072000; includeSubDomains\""
+    #       always: true
 http_templates:
   - backup: true
     deployment_location: /etc/nginx/conf.d/default.conf
     config:
+      core:
+        client_max_body_size: 50m
       ssl:
         certificate: "{{ cert_file }}"
         certificate_key: "{{ cert_key }}"
@@ -239,11 +299,25 @@ http_templates:
     config:
       upstreams: "{{ upstreams_wiki }}"
       servers: "{{ servers_wiki }}"
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/cryptpad.conf
+    config:
+      upstreams: "{{ upstreams_doc }}"
+      servers: "{{ servers_doc }}"
+      ssl:
+        dhparam: /etc/dhparam.pem
+        session_cache:
+          builtin:
+            enable: true
+            size: 20480
+        session_tickets: false
+        session_timeout: 1d
 nginx_confs:
   - /etc/nginx/conf.d/default.conf
   - /etc/nginx/conf.d/forgejo.conf
   - /etc/nginx/conf.d/synapse.conf
   - /etc/nginx/conf.d/wiki.conf
+  - /etc/nginx/conf.d/cryptpad.conf
 mx_config_dir: "/etc/matrix-synapse/conf.d"
 mx_user: hr-synapse
 mx_db_user: hrsynapse
@@ -253,3 +327,14 @@ wk_host: "wiki.hierarch.live"
 wk_home_dir: "/srv/wikijs"
 wk_base_dir: "{{ wk_home_dir }}/wiki"
 kc_name: keycloak
+hr_host: "hr.hierarch.live"
+doc_host: "docs.hierarch.live"
+doc_base_url: "https://{{ doc_host }}"
+sandbox_host: "sandbox.hierarch.live"
+sandbox_base_url: "https://{{ sandbox_host }}"
+doc_home_dir: "/opt/cryptpad"
+doc_base_dir: "{{ doc_home_dir }}/doc"
+doc_version: "5.7.0"
+doc_repo: "https://github.com/cryptpad/cryptpad.git"
+doc_sso_repo: "https://github.com/cryptpad/sso"
+doc_admin_keys: "[\"[hr-cryptpad@docs.hierarch.live/Wv-xZAQ3H8+0VNaAifjgiDbiK9JyZj-H4UlXJ4Q1Gjw=]\"]"
