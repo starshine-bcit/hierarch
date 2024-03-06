@@ -3,6 +3,19 @@
 # fj_pass:
 # fj_secret_key:
 # fj_internal_key:
+ufw_allowed_in:
+  tcp:
+    - "80"
+    - "443"
+    - "1001"
+    - "3478,3479,5349,5350"
+  udp:
+    - "3478,3479,5349,5350"
+    - "49152:65535"
+ufw_limit_in:
+  tcp:
+    - "22"
+  udp: []
 fj_download_link: "https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-linux-amd64"
 fj_email: contact@hierarch.live
 fj_version: "1.21.6-0-amd64"
@@ -338,3 +351,7 @@ doc_version: "5.7.0"
 doc_repo: "https://github.com/cryptpad/cryptpad.git"
 doc_sso_repo: "https://github.com/cryptpad/sso"
 doc_admin_keys: "[\"[hr-cryptpad@docs.hierarch.live/Wv-xZAQ3H8+0VNaAifjgiDbiK9JyZj-H4UlXJ4Q1Gjw=]\"]"
+runner_download: "https://code.forgejo.org/forgejo/runner/releases/download/v3.0.0/forgejo-runner-3.0.0-linux-amd64"
+runner_verify_download: "https://code.forgejo.org/forgejo/runner/releases/download/v3.0.0/forgejo-runner-3.0.0-linux-amd64.asc"
+runner_verify_fingerprint: "EB114F5E6C0DC2BCDD183550A4B61A2DC5923710"
+runner_dir: /opt/runner

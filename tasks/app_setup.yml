@@ -1,7 +1,11 @@
 ---
-#     - name: Install docker-ce role
-#       ansible.builtin.import_role:
-#         name: haxorof.docker_ce
+# - name: Give ufw role
+#   ansible.builtin.import_role:
+#     name: sfey.hierarch.ufw
+#   become: true
+# - name: Install docker-ce role
+#   ansible.builtin.import_role:
+#     name: haxorof.docker_ce
 # - name: Give letsencryptnginx role
 #   ansible.builtin.import_role:
 #     name: sfey.hierarch.letsencryptnginx
@@ -10,10 +14,14 @@
 #   ansible.builtin.import_role:
 #     name: sfey.hierarch.postgres
 #   become: true
-# - name: Give forgejo role
-#   ansible.builtin.import_role:
-#     name: sfey.hierarch.forgejo
-#   become: true
+- name: Give forgejo role
+  ansible.builtin.import_role:
+    name: sfey.hierarch.forgejo
+  become: true
+- name: Give runner role
+  ansible.builtin.import_role:
+    name: sfey.hierarch.runner
+  become: true
 # - name: Give synapse role
 #   ansible.builtin.import_role:
 #     name: sfey.hierarch.synapse
@@ -22,7 +30,7 @@
 #   ansible.builtin.import_role:
 #     name: sfey.hierarch.wikijs
 #   become: true
-- name: Give cryptpad role
-  ansible.builtin.import_role:
-    name: sfey.hierarch.cryptpad
-  become: true
+# - name: Give cryptpad role
+#   ansible.builtin.import_role:
+#     name: sfey.hierarch.cryptpad
+#   become: true

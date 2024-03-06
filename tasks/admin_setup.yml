@@ -1,4 +1,8 @@
 ---
+- name: Give ufw role
+  ansible.builtin.import_role:
+    name: sfey.hierarch.ufw
+  become: true
 - name: Give letsencryptnginx role
   ansible.builtin.import_role:
     name: sfey.hierarch.letsencryptnginx

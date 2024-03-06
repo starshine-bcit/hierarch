@@ -8,6 +8,15 @@
 # kc_admin_pass:
 # mailcow_client_secret:
 # begin normal vars
+ufw_allowed_in:
+  tcp:
+    - "80"
+    - "443"
+  udp: []
+ufw_limit_in:
+  tcp:
+    - "22"
+  udp: []
 fj_url: https://git.hierarch.live
 kc_db_name: keycloak
 kc_db_origin: admin.hierarch.live
