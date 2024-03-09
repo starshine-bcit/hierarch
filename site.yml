@@ -11,11 +11,11 @@
       become: false
       changed_when: false
       no_log: true
-# - name: Configure admin server
-#   hosts: admin
-#   tasks:
-#     - name: Include admin_setup.yml tasks
-#       ansible.builtin.import_tasks: tasks/admin_setup.yml
+- name: Configure admin server
+  hosts: admin
+  tasks:
+    - name: Include admin_setup.yml tasks
+      ansible.builtin.import_tasks: tasks/admin_setup.yml
 # - name: Configure mail server
 #   hosts: mail
 #   tasks:
@@ -31,11 +31,11 @@
 #         seconds: 30
 #     - name: Include kc_realm.yml tasks
 #       ansible.builtin.import_tasks: tasks/kc_realm.yml
-- name: Setup app server
-  hosts: app
-  tasks:
-    - name: Include app_setup.yml tasks
-      ansible.builtin.import_tasks: tasks/app_setup.yml
+# - name: Setup app server
+#   hosts: app
+#   tasks:
+#     - name: Include app_setup.yml tasks
+#       ansible.builtin.import_tasks: tasks/app_setup.yml
 - name: Clean up
   hosts: localhost
   gather_facts: false

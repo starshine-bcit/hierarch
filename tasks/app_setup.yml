@@ -14,14 +14,14 @@
 #   ansible.builtin.import_role:
 #     name: sfey.hierarch.postgres
 #   become: true
-- name: Give forgejo role
-  ansible.builtin.import_role:
-    name: sfey.hierarch.forgejo
-  become: true
-- name: Give runner role
-  ansible.builtin.import_role:
-    name: sfey.hierarch.runner
-  become: true
+# - name: Give forgejo role
+#   ansible.builtin.import_role:
+#     name: sfey.hierarch.forgejo
+#   become: true
+# - name: Give runner role
+#   ansible.builtin.import_role:
+#     name: sfey.hierarch.runner
+#   become: true
 # - name: Give synapse role
 #   ansible.builtin.import_role:
 #     name: sfey.hierarch.synapse
@@ -33,4 +33,8 @@
 # - name: Give cryptpad role
 #   ansible.builtin.import_role:
 #     name: sfey.hierarch.cryptpad
+#   become: true
+# - name: Give orangehrm role
+#   ansible.builtin.import_role:
+#     name: sfey.hierarch.orangehrm
 #   become: true

@@ -67,19 +67,12 @@ admin_email: fey.sasha@gmail.com
 certs:
   - domains:
       - "{{ domain_name }}"
-      - "www.{{ domain_name }}"
       - "{{ fj_host }}"
-      - "www.{{ fj_host }}"
       - "{{ mx_host }}"
-      - "www.{{ mx_host }}"
       - "{{ wk_host }}"
-      - "www.{{ wk_host }}"
       - "{{ hr_host }}"
-      - "www.{{ hr_host }}"
       - "{{ doc_host }}"
-      - "www.{{ doc_host }}"
       - "{{ sandbox_host }}"
-      - "www.{{ sandbox_host }}"
 stop_services:
   - nginx
 upstreams_forgejo:
@@ -104,6 +97,10 @@ upstreams_doc:
   - name: cryptwebsocket
     servers:
       - address: localhost:7006
+upstreams_hr:
+  - name: icehrm
+    servers:
+      - address: localhost:7654
 nginx_fj_locations:
   - location: /
     proxy:
@@ -156,12 +153,20 @@ nginx_doc_locations:
           value: $http_upgrade
         - field: Connection
           value: upgrade
-postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0003/cert.pem"
-postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}-0003/privkey.pem"
+nginx_ls_locations:
+  - location: /
+    try_files:
+      files: $uri
+nginx_hr_locations:
+  - location: /
+    proxy:
+      pass: http://icehrm
+postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0004/cert.pem"
+postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}-0004/privkey.pem"
 postgres_local_cert_file: /etc/postgresql/15/main/cert.pem
 postgres_local_key_file: /etc/postgresql/15/main/privkey.pem
-cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0003/fullchain.pem"
-cert_key: "/etc/letsencrypt/live/{{ domain_name }}-0003/privkey.pem"
+cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0004/fullchain.pem"
+cert_key: "/etc/letsencrypt/live/{{ domain_name }}-0004/privkey.pem"
 servers_forgejo:
   - core:
       listen:
@@ -227,6 +232,21 @@ servers_doc:
     #     - name: Strict-Transport-Security
     #       value: "\"max-age=63072000; includeSubDomains\""
     #       always: true
+servers_hr:
+  - core:
+      listen:
+        - address: "0.0.0.0"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+        - address: "[::]"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+      server_name: "{{ hr_host }}"
+    locations: "{{ nginx_hr_locations }}"
 http_templates:
   - backup: true
     deployment_location: /etc/nginx/conf.d/default.conf
@@ -325,12 +345,18 @@ http_templates:
             size: 20480
         session_tickets: false
         session_timeout: 1d
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/orangehrm.conf
+    config:
+      upstreams: "{{ upstreams_hr }}"
+      servers: "{{ servers_hr }}"
 nginx_confs:
   - /etc/nginx/conf.d/default.conf
   - /etc/nginx/conf.d/forgejo.conf
   - /etc/nginx/conf.d/synapse.conf
   - /etc/nginx/conf.d/wiki.conf
   - /etc/nginx/conf.d/cryptpad.conf
+  - /etc/nginx/conf.d/orangehrm.conf
 mx_config_dir: "/etc/matrix-synapse/conf.d"
 mx_user: hr-synapse
 mx_db_user: hrsynapse
@@ -355,3 +381,4 @@ runner_download: "https://code.forgejo.org/forgejo/runner/releases/download/v3.0
 runner_verify_download: "https://code.forgejo.org/forgejo/runner/releases/download/v3.0.0/forgejo-runner-3.0.0-linux-amd64.asc"
 runner_verify_fingerprint: "EB114F5E6C0DC2BCDD183550A4B61A2DC5923710"
 runner_dir: /opt/runner
+hr_base_dir: "/opt/orangehrm"
