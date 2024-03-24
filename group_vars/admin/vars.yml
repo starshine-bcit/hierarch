@@ -214,3 +214,21 @@ hp_version: "v0.8.8"
 hp_home_dir: "/opt/homepage"
 hp_base_dir: "{{ hp_home_dir }}/hp"
 yarn_bin: "/usr/local/bin/yarn"
+borg_before_backup:
+  - echo "Starting a backup"
+  # - echo "Starting pre backup scripts."
+  # - /root/postgres-backup
+  # - echo "Pre backup completed, starting backup."
+borg_after_backup:
+  - echo "Finished a backup."
+borg_source_dirs:
+  - /etc/nginx
+  - /etc/letsencrypt
+  - /etc/keycloak
+  - /opt/keycloak
+  - /opt/homepage
+  - /etc/postgresql
+  - /etc/systemd/system
+borg_repos:
+  - ssh://{{ borg_backup_user }}@{{ borg_backup_host }}{{ borg_home_dir }}/admin.borg
+pg_backup_databases: true

@@ -79,9 +79,28 @@ configured in this way, you just need to do the mailcow part.
 
 https://mailcow.email/posts/2023/mailcow-idp/
 
+## orangehrm configuration
+
+You will unfortunately need to login and complete the guided web setup as per [here](https://starterhelp.orangehrm.com/hc/en-us/articles/5295915003666-OrangeHRM-Starter-Installation-Guide). You will want to specify the db to be the companion docker mysql container. Once that process is complete and you can login as the administrator.
+
+From there, you can create a "social media login" which is actually just an OIDC client. Directions [here](https://starterhelp.orangehrm.com/hc/en-us/articles/12392313182236--Set-up-Social-Media-Authentication). The values should already be configured in keycloak at this point, so you should fill them in as such:
+
+Name: keycloak
+Client ID: orangehrm
+Provider URL: https://<your-kc-domain>/realms/<your-realm>
+Client Secret: As defined in the ansible vault or in keycloak admin console.
+
+OrangeHRM is currently the only service provided by hierarch that will not provision an account on first login. In order to create an employee record, please refer to their documentation, and then specify the email as the same one that is in the user's keycloak account. They will then be able to login via keycloak.
+
 ## forgejo configuration
 
 
+
+## backup configuration
+
+While the backup is configured and set to run automatically with borgmatic, you must first manually login and initialize the repos. This is intentional, as it gives you the chance to backup the very important repokeys. These should be stored in a separate location / password store from the repo passphrase.
+
+The repos can be initiated with the command `sudo borgmatic init --encryption repokey` on each host. To backup the repokey, see the [borg documentation](https://borgbackup.readthedocs.io/en/stable/index.html).
 
 ## Credits
 

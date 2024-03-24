@@ -19,18 +19,30 @@
 - name: Configure mail server
   hosts: mail
   tasks:
-    - name: Give mailcow role
+#     - name: Give mailcow role
+#       ansible.builtin.import_role:
+#         name: sfey.hierarch.mailcow
+#       become: true
+#     - name: Create backup dir
+#       ansible.builtin.file:
+#         state: directory
+#         path: "/opt/backup"
+#         owner: root
+#         group: root
+#         mode: '770'
+#       become: true
+    - name: Give borgmatic role
       ansible.builtin.import_role:
-        name: sfey.hierarch.mailcow
+        name: sfey.hierarch.borgmatic
       become: true
-- name: Setup keycloak realm and roles
-  hosts: admin
-  tasks:
-    - name: Sleep for 30 seconds while keycloak starts up
-      ansible.builtin.pause:
-        seconds: 30
-    - name: Include kc_realm.yml tasks
-      ansible.builtin.import_tasks: tasks/kc_realm.yml
+# - name: Setup keycloak realm and roles
+#   hosts: admin
+#   tasks:
+#     - name: Sleep for 30 seconds while keycloak starts up
+#       ansible.builtin.pause:
+#         seconds: 30
+#     - name: Include kc_realm.yml tasks
+#       ansible.builtin.import_tasks: tasks/kc_realm.yml
 - name: Setup app server
   hosts: app
   tasks:

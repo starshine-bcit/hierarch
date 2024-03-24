@@ -368,7 +368,6 @@ wk_base_dir: "{{ wk_home_dir }}/wiki"
 kc_name: keycloak
 hr_host: "hr.hierarch.live"
 doc_host: "docs.hierarch.live"
-doc_base_url: "https://{{ doc_host }}"
 sandbox_host: "sandbox.hierarch.live"
 sandbox_base_url: "https://{{ sandbox_host }}"
 doc_home_dir: "/opt/cryptpad"
@@ -382,3 +381,27 @@ runner_verify_download: "https://code.forgejo.org/forgejo/runner/releases/downlo
 runner_verify_fingerprint: "EB114F5E6C0DC2BCDD183550A4B61A2DC5923710"
 runner_dir: /opt/runner
 hr_base_dir: "/opt/orangehrm"
+borg_before_backup:
+  - echo "Starting pre backup scripts."
+  - /root/orange-backup
+  # - /root/postgres-backup
+  - echo "Pre backup completed, starting backup."
+borg_after_backup:
+  - echo "Finished a backup."
+borg_source_dirs:
+  - /var/orangeback
+  - /srv
+  - /opt/cryptpad
+  - /opt/runner
+  - /etc/letsencrypt
+  - /etc/postgresql
+  - /etc/nginx
+  - /etc/matrix-synapse
+  - /usr/share/element-web
+  - /etc/turnserver.conf
+  - /etc/systemd/system
+borg_repos:
+  - ssh://{{ borg_backup_user }}@{{ borg_backup_host }}{{ borg_home_dir }}/local.borg
+hr_db_container: orangehrm-db-1
+hr_db_name: orange
+pg_backup_databases: true

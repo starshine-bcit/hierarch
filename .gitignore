@@ -3,6 +3,12 @@
 *.key
 *.csr
 *.zip
+borg_ssh
+borg_ssh.pub
 collections/
 .vscode/
 .VSCodeCounter
+.terraform
+*.plan
+*.tfstate
+*.tfstate.backup
