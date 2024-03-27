@@ -2,7 +2,6 @@
 borg_before_backup:
   - echo "Starting pre backup scripts."
   - /root/orange-backup
-  # - /root/postgres-backup
   - echo "Pre backup completed, starting backup."
 borg_after_backup:
   - echo "Finished a backup."

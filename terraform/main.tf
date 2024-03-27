@@ -9,7 +9,7 @@ resource "aws_instance" "admin" {
   tags                   = var.admin_tags
   ipv6_addresses         = [cidrhost(aws_subnet.main.ipv6_cidr_block, 128)]
   root_block_device {
-    volume_size = 40
+    volume_size = 240
   }
 }
 

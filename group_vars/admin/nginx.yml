@@ -69,9 +69,8 @@ servers:
           port: 443
           default_server: true
           ssl: true
-      server_name: "hierarch.live"
+      server_name: "{{ root_domain }}"
     locations: "{{ nginx_hp_locations }}"
-mx_base_url: "https://chat.hierarch.live"
 http_templates:
   - backup: true
     config:

@@ -16,7 +16,7 @@ With the exception of the mail server, each one has nginx, certbot, ufw, and pos
 
 ### Admin
 
-The so-called admin server is an identity provider, hosting Keycloak. It also contains the primary Postgres database, which a variety of other services use.
+The so-called admin server is an identity provider, hosting Keycloak.
 
 This server, in it's current configuration, is also responsible for hosting and mirroring the automated backups from the other servers. The backups are designed in this fashion:
 
@@ -24,7 +24,7 @@ This server, in it's current configuration, is also responsible for hosting and 
 2. Daily, the backup server mirrors an encrypted tgz of each archive to some cloud provider (not implemented in POC). Alternately, a provider with borg support could be used, then a separate backup location specified in the borgmatic config.
 3. Weekly, it is intended that someone rsyncs each borg archive to a rotating external drive, which should be stored in a secure location.
 
-Finally, the admin server hosts a dashboard which is meant to act as a homepage for users, making it easier to access the various services.
+The admin server hosts a dashboard which is meant to act as a homepage for users, making it easier to access the various services.
 
 Spec for POC:
 
@@ -48,8 +48,9 @@ The app server hosts all the other services which are part of Hierarch. Services
 
 - Forgejo
 - Forgejo Runner
-- Matrix Synapse & coturn
-- Element Webapp
+- Matrix Synapse
+- coturn
+- Element Web
 - Cryptpad
 - Wiki.js
 - OrangeHRM
@@ -109,6 +110,18 @@ The forgejo instance should just work out of the box, however an Admin may want 
 
 Any user configured in Keycloak should be able to login to cryptpad. In order to create an admin user, please follow [these directions](https://docs.cryptpad.org/en/admin_guide/installation.html#configure-administrators). Alternately, you can modify the appropriate variable in ansible and rerun the playbook to insert the adminKey.
 
+### wikijs configuration
+
+An admin user will be provisioned by ansible. The admin should login and disable registration. They can also turn on Bypass Login Screen and Hide Local Authentication Provider in order to streamline the user login procedure. Should you need to access the local login as an admin, add `?all=1` to the login url.
+
+Once that is done, you can setup some groups, permissions, as well as define a default group for new users.
+
+### matrix configuration
+
+An admin user is created by ansible. It is recommended the adminstrator login via a desktop matrix client to perform further configuration. If needed, extra administrator accounts can be setup using the [User Admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#change-whether-a-user-is-a-server-administrator-or-not).
+
+The synapse server is configured with two channels which new users are auto-joined to, and are not encrypted. Users should be invited to the correct spaces/channels when they first login by a mod/admin.
+
 ### backup configuration
 
 While the backup is configured and set to run automatically with borgmatic, you must first manually login and initialize the repos. This is intentional, as it gives you the chance to backup the very important repokeys. These should be stored in a separate location / password store from the repo passphrase.
@@ -131,6 +144,10 @@ There are a couple other roles present, but unfortunately the OIDC support is re
 Include the `./terraform` folder is a terraform config to deploy 3 three servers on AWS with roughly the same capabilities as the VPSs described above, and includes IPv6 configuration. This is provided purely for demontration purposes, and would not be a recommended way to deploy hierarch. This is due to two reasons: AWS is very expensive, and it also does not allow outgoing mail traffic.
 
 However, if you were to go this route, you would want to apply some basic hardening prior to pointing the main ansible playbook at it, such as setting up another user with a password-protected ssh private key and a password-protected sudo access.
+
+## Further Reading
+
+For more detailed information on each of the roles used, please refer to the [hierarch-collection](https://github.com/starshine-bcit/hierarch-collection) repository and readme.
 
 ## Credits
 

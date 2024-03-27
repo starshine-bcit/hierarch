@@ -13,6 +13,7 @@
 # pg_super_name:
 # pg_super_pass:
 # begin normal variables
+root_domain: "hierarch.live"
 ca_local_key_file: "certs/ca.key"
 ca_local_cert_file: "certs/ca.pem"
 kc_local_cert_file: "certs/postgres.pem"
@@ -35,3 +36,4 @@ doc_host: "docs.hierarch.live"
 mx_host: "chat.hierarch.live"
 sandbox_host: "sandbox.hierarch.live"
 sandbox_base_url: "https://{{ sandbox_host }}"
+mx_base_url: "https://chat.hierarch.live"

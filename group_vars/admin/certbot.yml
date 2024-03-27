@@ -8,5 +8,5 @@ certs:
       - "hierarch.live"
 stop_services:
   - nginx
-cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/fullchain.pem"
-cert_key: "/etc/letsencrypt/live/{{ domain_name }}-0002/privkey.pem"
+cert_file: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+cert_key: "/etc/letsencrypt/live/{{ domain_name }}/privkey.pem"
