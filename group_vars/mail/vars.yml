@@ -1,3 +1,4 @@
+---
 hostname: mail.hierarch.live
 additional_san:
   - www.mail.hierarch.live

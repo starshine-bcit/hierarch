@@ -1,0 +1,10 @@
+---
+ufw_allowed_in:
+  tcp:
+    - "80"
+    - "443"
+  udp: []
+ufw_limit_in:
+  tcp:
+    - "22"
+  udp: []

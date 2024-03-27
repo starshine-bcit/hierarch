@@ -7,22 +7,13 @@
 # kc_admin_user:
 # kc_admin_pass:
 # mailcow_client_secret:
+# wk_client_secret:
 # begin normal vars
-ufw_allowed_in:
-  tcp:
-    - "80"
-    - "443"
-  udp: []
-ufw_limit_in:
-  tcp:
-    - "22"
-  udp: []
-fj_url: https://git.hierarch.live
+domain_name: admin.hierarch.live
 kc_db_name: keycloak
 kc_db_origin: admin.hierarch.live
 kc_realm_name: hierarch
 kc_db_host: localhost
-kc_public_hostname: admin.hierarch.live
 kc_admin_url: https://admin.hierarch.live
 kc_public_url: https://admin.hierarch.live
 kc_hostname_path: "/"
@@ -34,60 +25,6 @@ kc_https_port: 7001
 kc_http_host: "0.0.0.0"
 kc_https_enabled: false
 kc_proxy_mode: edge
-domain_name: admin.hierarch.live
-server_names:
-  - "{{ domain_name }}"
-admin_email: fey.sasha@gmail.com
-db_hostname: localhost
-db_is_local: true
-db_databases:
-  - name: "{{ kc_db_name }}"
-    user: "{{ kc_db_user }}"
-    pass: "{{ kc_db_pass }}"
-    schema: "{{ kc_db_name }}"
-    origin: "127.0.0.1"
-    ipv6_origin: ""
-    collate: ""
-    public_schema: false
-certs:
-  - domains:
-      - "{{ domain_name }}"
-      - "hierarch.live"
-stop_services:
-  - nginx
-nginx_upstreams:
-  - name: keycloak
-    servers:
-      - address: 127.0.0.1:7000
-  - name: homepage
-    servers:
-      - address: 127.0.0.1:3000
-nginx_main_locations:
-  - location: /admin # restrict
-    proxy:
-      pass: http://keycloak
-  - location: /js # restrict
-    proxy:
-      pass: http://keycloak
-  - location: /realms
-    proxy:
-      pass: http://keycloak
-  - location: /resources
-    proxy:
-      pass: http://keycloak
-  - location: /robots.txt
-    proxy:
-      pass: http://keycloak
-nginx_hp_locations:
-  - location: /
-    proxy:
-      pass: http://homepage
-cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/fullchain.pem"
-cert_key: "/etc/letsencrypt/live/{{ domain_name }}-0002/privkey.pem"
-postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/cert.pem"
-postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}-0002/privkey.pem"
-postgres_local_cert_file: /etc/postgresql/15/main/cert.pem
-postgres_local_key_file: /etc/postgresql/15/main/privkey.pem
 kc_realm: hierarch
 kc_admin_role: admin
 kc_groups:
@@ -104,131 +41,8 @@ kc_groups:
     synapse_user: "true"
   forgejo_admin:
     forgejo_user: "true"
-mail_hostname: mail.hierarch.live
-mail_url: "https://{{ mail_hostname }}"
-servers:
-  - core:
-      listen:
-        - address: "0.0.0.0"
-          port: 80
-          default_server: true
-          ssl: false
-        - address: "[::]"
-          port: 80
-          default_server: true
-          ssl: false
-    rewrite:
-      return:
-        code: 301
-        url: "https://$host$request_uri"
-  - core:
-      listen:
-        - address: "0.0.0.0"
-          port: 443
-          default_server: false
-          ssl: true
-        - address: "[::]"
-          port: 443
-          default_server: false
-          ssl: true
-      server_name: "{{ domain_name }}"
-    locations: "{{ nginx_main_locations }}"
-    proxy:
-      buffer_size: 256k
-      buffers:
-        number: 8
-        size: 512k
-      busy_buffers_size: 512k
-  - core:
-      listen:
-        - address: "0.0.0.0"
-          port: 443
-          default_server: true
-          ssl: true
-        - address: "[::]"
-          port: 443
-          default_server: true
-          ssl: true
-      server_name: "hierarch.live"
-    locations: "{{ nginx_hp_locations }}"
-mx_base_url: "https://chat.hierarch.live"
-http_templates:
-  - backup: true
-    config:
-      upstreams: "{{ nginx_upstreams }}"
-      ssl:
-        certificate: "{{ cert_file }}"
-        certificate_key: "{{ cert_key }}"
-        ciphers:
-          - HIGH
-          - "!aNull"
-          - "!MD5"
-        conf_command: Protocol TLSv1.2
-        prefer_server_ciphers: false
-        protocols:
-          - TLSv1.2
-          - TLSv1.3
-      proxy:
-        set_header:
-          - field: X-Forwarded-For
-            value: $proxy_add_x_forwarded_for
-          - field: X-Forwarded-Proto
-            value: $scheme
-          - field: X-Fowarded-Host
-            value: $host
-          - field: Host
-            value: $http_host
-          - field: User-Agent
-            value: $http_user_agent
-          - field: X-Real-IP
-            value: $remote_addr
-        buffering: false
-      log:
-        access:
-          - path: /var/log/nginx/access.log
-            format: main
-            buffer: 1m
-            gzip: 5
-            flush: 10h
-            if: $status
-        format:
-          - name: main
-            format: |
-              '$remote_addr - $remote_user [$time_local] "$request" '
-              '$status $body_bytes_sent "$http_referer" '
-              '"$http_user_agent" "$http_x_forwarded_for"'
-        error_log:
-          file: /var/log/nginx/error.log
-          level: notice
-        open_log_file_cache:
-          max: 1000
-          inactive: 20s
-          min_uses: 2
-          valid: 1m
-      servers: "{{ servers }}"
-nginx_confs:
-  - /etc/nginx/conf.d/default.conf
-wk_base_url: "https://wiki.hierarch.live"
 hp_repo: "https://github.com/gethomepage/homepage.git"
 hp_version: "v0.8.8"
 hp_home_dir: "/opt/homepage"
 hp_base_dir: "{{ hp_home_dir }}/hp"
 yarn_bin: "/usr/local/bin/yarn"
-borg_before_backup:
-  - echo "Starting a backup"
-  # - echo "Starting pre backup scripts."
-  # - /root/postgres-backup
-  # - echo "Pre backup completed, starting backup."
-borg_after_backup:
-  - echo "Finished a backup."
-borg_source_dirs:
-  - /etc/nginx
-  - /etc/letsencrypt
-  - /etc/keycloak
-  - /opt/keycloak
-  - /opt/homepage
-  - /etc/postgresql
-  - /etc/systemd/system
-borg_repos:
-  - ssh://{{ borg_backup_user }}@{{ borg_backup_host }}{{ borg_home_dir }}/admin.borg
-pg_backup_databases: true

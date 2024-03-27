@@ -1,0 +1,25 @@
+---
+borg_before_backup:
+  - echo "Starting pre backup scripts."
+  - /root/orange-backup
+  # - /root/postgres-backup
+  - echo "Pre backup completed, starting backup."
+borg_after_backup:
+  - echo "Finished a backup."
+borg_source_dirs:
+  - /var/orangeback
+  - /srv
+  - /opt/cryptpad
+  - /opt/runner
+  - /etc/letsencrypt
+  - /etc/postgresql
+  - /etc/nginx
+  - /etc/matrix-synapse
+  - /usr/share/element-web
+  - /etc/turnserver.conf
+  - /etc/systemd/system
+borg_repos:
+  - ssh://{{ borg_backup_user }}@{{ borg_backup_host }}{{ borg_home_dir }}/local.borg
+hr_db_container: orangehrm-db-1
+hr_db_name: orange
+pg_backup_databases: true

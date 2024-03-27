@@ -1,0 +1,17 @@
+---
+server_names:
+  - "{{ fj_host }}"
+admin_email: fey.sasha@gmail.com
+certs:
+  - domains:
+      - "{{ domain_name }}"
+      - "{{ fj_host }}"
+      - "{{ mx_host }}"
+      - "{{ wk_host }}"
+      - "{{ hr_host }}"
+      - "{{ doc_host }}"
+      - "{{ sandbox_host }}"
+stop_services:
+  - nginx
+cert_file: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+cert_key: "/etc/letsencrypt/live/{{ domain_name }}/privkey.pem"

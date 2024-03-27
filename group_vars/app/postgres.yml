@@ -1,0 +1,36 @@
+---
+db_hostname: localhost
+db_is_local: true
+db_databases:
+  - name: forgejo
+    user: "{{ fj_db_user }}"
+    pass: "{{ fj_db_pass }}"
+    schema: forgejo
+    origin: "127.0.0.1"
+    ipv6_origin: ""
+    collate: ""
+    public_schema: false
+  - name: "{{ mx_db_name }}"
+    user: "{{ mx_db_user }}"
+    pass: "{{ mx_db_pass }}"
+    schema: "{{ mx_db_name }}"
+    origin: "127.0.0.1"
+    ipv6_origin: ""
+    collate: C
+    public_schema: true
+  - name: "{{ wk_db_name }}"
+    user: "{{ wk_db_user }}"
+    pass: "{{ wk_db_pass }}"
+    schema: "{{ wk_db_name }}"
+    origin: "127.0.0.1"
+    ipv6_origin: ""
+    collate: ""
+    public_schema: false
+postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}/cert.pem"
+postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}/privkey.pem"
+postgres_local_cert_file: /etc/postgresql/15/main/cert.pem
+postgres_local_key_file: /etc/postgresql/15/main/privkey.pem
+wk_db_name: wikijs
+wk_db_user: hrwikijs
+mx_db_user: hrsynapse
+mx_db_name: synapse
