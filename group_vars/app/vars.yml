@@ -30,7 +30,6 @@ smtp_type: "smtp+starttls"
 domain_name: app.hierarch.live
 mx_user: hr-synapse
 turn_allowed_peer_ip: "104.219.236.22"
-kc_name: keycloak
 runner_download: "https://code.forgejo.org/forgejo/runner/releases/download/v3.0.0/forgejo-runner-3.0.0-linux-amd64"
 runner_verify_download: "https://code.forgejo.org/forgejo/runner/releases/download/v3.0.0/forgejo-runner-3.0.0-linux-amd64.asc"
 runner_verify_fingerprint: "EB114F5E6C0DC2BCDD183550A4B61A2DC5923710"
