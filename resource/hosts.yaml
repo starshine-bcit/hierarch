@@ -1,8 +1,0 @@
-all:
-  vars:
-    ssh_priv_key: "~/.ssh/ansible-hierarch"
-    ansible_user: sfey
-admin:
-  hosts:
-    admin01:
-      ansible_host: "192.168.88.135"

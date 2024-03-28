@@ -1,5 +1,5 @@
 [submodule "sfey/hierarch"]
-	path = sfey/hierarch
-	url = https://github.com/starshine-bcit/hierarch-collection.git
-    branch = main
-    update = checkout
+path = sfey/hierarch
+url = https://github.com/starshine-bcit/hierarch-collection.git
+branch = main
+update = checkout

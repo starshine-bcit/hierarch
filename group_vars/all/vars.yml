@@ -1,0 +1,42 @@
+---
+# add these in vault.yml
+# ansible_become_pass:
+# ssh_key_file:
+# ssh_key_pass:
+# ca_key_pass:
+# fj_db_pass:
+# fj_client_secret:
+# mx_client_secret:
+# doc_client_secret:
+# borg_passphrase:
+# borg_user_pass:
+# pg_super_name:
+# pg_super_pass:
+# begin normal variables
+root_domain: "hierarch.live"
+ca_local_key_file: "certs/ca.key"
+ca_local_cert_file: "certs/ca.pem"
+kc_local_cert_file: "certs/postgres.pem"
+kc_local_key_file: "certs/postgres.key"
+kc_hostname: admin.hierarch.live
+fj_db_user: hrforgejo
+borg_config_file: "/etc/borgmatic/config.yaml"
+borg_backup_host: "app.hierarch.live"
+borg_backup_user: "borg"
+borg_home_dir: "/var/borg"
+doc_base_url: "https://{{ doc_host }}"
+fj_url: https://git.hierarch.live
+kc_public_hostname: admin.hierarch.live
+mail_hostname: mail.hierarch.live
+mail_url: "https://{{ mail_hostname }}"
+wk_base_url: "https://wiki.hierarch.live"
+wk_host: "wiki.hierarch.live"
+hr_host: "hr.hierarch.live"
+doc_host: "docs.hierarch.live"
+mx_host: "chat.hierarch.live"
+sandbox_host: "sandbox.hierarch.live"
+sandbox_base_url: "https://{{ sandbox_host }}"
+mx_base_url: "https://chat.hierarch.live"
+oidc_realm_url: "https://{{ kc_public_hostname }}/realms/hierarch"
+oidc_url: "https://{{ kc_public_hostname }}/realms/hierarch/.well-known/openid-configuration"
+fj_host: "git.hierarch.live"

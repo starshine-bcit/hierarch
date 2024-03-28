@@ -1,0 +1,31 @@
+---
+# these should be defined in vault.yml
+# kc_db_user:
+# kc_db_pass:
+# kc_root_user:
+# kc_root_pass:
+# kc_admin_user:
+# kc_admin_pass:
+# mailcow_client_secret:
+# wk_client_secret:
+# begin normal vars
+domain_name: admin.hierarch.live
+kc_admin_url: https://admin.hierarch.live
+kc_public_url: https://admin.hierarch.live
+kc_admin_hostname: admin.hierarch.live
+kc_realm: hierarch
+kc_admin_role: admin
+kc_groups:
+  developer:
+    forgejo_user: "true"
+  manager:
+    forgejo_user: "true"
+  hr:
+    forgejo_user: "false"
+  it:
+    forgejo_user: "true"
+  user:
+    mailcow_template: default
+    synapse_user: "true"
+  forgejo_admin:
+    forgejo_user: "true"

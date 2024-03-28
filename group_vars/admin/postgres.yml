@@ -1,0 +1,12 @@
+---
+db_databases:
+  - name: "{{ kc_db_name }}"
+    user: "{{ kc_db_user }}"
+    pass: "{{ kc_db_pass }}"
+    schema: "{{ kc_db_name }}"
+    origin: "127.0.0.1"
+    ipv6_origin: ""
+    collate: ""
+    public_schema: false
+postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}/cert.pem"
+postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}/privkey.pem"

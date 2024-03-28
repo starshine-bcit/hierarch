@@ -1,0 +1,18 @@
+---
+hostname: mail.hierarch.live
+additional_san:
+  - www.mail.hierarch.live
+acme_contact: fey.sasha@gmail.com
+borg_before_backup:
+  - echo "Starting a mailcow backup."
+  - chmod 777 /opt/backup
+  - MAILCOW_BACKUP_LOCATION=/opt/backup /opt/mailcow-dockerized/helper-scripts/backup_and_restore.sh backup all --delete-days 1
+  - chmod 770 /opt/backup
+  - echo "Finished mailcow backup, now starting borg backup"
+borg_after_backup:
+  - echo "Finished a backup."
+borg_source_dirs:
+  - /opt/backup
+borg_repos:
+  - ssh://{{ borg_backup_user }}@{{ borg_backup_host }}{{ borg_home_dir }}/mail.borg
+pg_backup_databases: false

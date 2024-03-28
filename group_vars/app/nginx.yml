@@ -1,0 +1,277 @@
+---
+upstreams_forgejo:
+  - name: forgejo
+    servers:
+      - address: localhost:7001
+upstreams_synapse:
+  - name: synapse
+    servers:
+      - address: localhost:7002
+upstreams_wiki:
+  - name: wikijs
+    servers:
+      - address: localhost:7003
+upstreams_doc:
+  - name: cryptpad
+    servers:
+      - address: localhost:7004
+  - name: cryptsandbox
+    servers:
+      - address: localhost:7005
+  - name: cryptwebsocket
+    servers:
+      - address: localhost:7006
+upstreams_hr:
+  - name: icehrm
+    servers:
+      - address: localhost:7654
+nginx_fj_locations:
+  - location: /
+    proxy:
+      pass: http://forgejo
+      http_version: 1.1
+nginx_mx_locations:
+  - location: '~ ^(/_matrix|/_synapse/client)'
+    proxy:
+      pass: http://synapse
+      http_version: 1.1
+  - location: /
+    core:
+      root: /usr/share/element-web
+  - location: "= /.well-known/matrix/server"
+    proxy:
+      pass: http://synapse
+      http_version: 1.1
+  - location: "= /.well-known/matrix/client"
+    rewrite:
+      return:
+        code: 200
+        text: "'{\"m.homeserver\": {\"base_url\": \"https://{{ mx_host }}\"}}'"
+    core:
+      default_type: application/json
+    headers:
+      add_headers:
+        - name: Access-Control-Allow-Origin
+          value: '*'
+          always: true
+nginx_wk_locations:
+  - location: /
+    proxy:
+      pass: http://wikijs
+      http_version: 1.1
+nginx_doc_locations:
+  - location: /
+    proxy:
+      pass: http://cryptpad
+      set_header:
+        - field: Upgrade
+          value: $http_upgrade
+        - field: Connection
+          value: upgrade
+      http_version: 1.1
+  - location: '^~ /cryptpad_websocket'
+    proxy:
+      pass: http://cryptwebsocket
+      set_header:
+        - field: Upgrade
+          value: $http_upgrade
+        - field: Connection
+          value: upgrade
+nginx_ls_locations:
+  - location: /
+    try_files:
+      files: $uri
+nginx_hr_locations:
+  - location: /
+    proxy:
+      pass: http://icehrm
+servers_forgejo:
+  - core:
+      listen:
+        - address: "0.0.0.0"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+        - address: "[::]"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+      server_name: "{{ fj_host }}"
+    locations: "{{ nginx_fj_locations }}"
+servers_synapse:
+  - core:
+      listen:
+        - address: "0.0.0.0"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+        - address: "[::]"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+      server_name: "{{ mx_host }}"
+    locations: "{{ nginx_mx_locations }}"
+servers_wiki:
+  - core:
+      listen:
+        - address: "0.0.0.0"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+        - address: "[::]"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+      server_name: "{{ wk_host }}"
+    locations: "{{ nginx_wk_locations }}"
+servers_doc:
+  - core:
+      listen:
+        - address: "0.0.0.0"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+        - address: "[::]"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+      server_name: "{{ doc_host }} {{ sandbox_host }}"
+    locations: "{{ nginx_doc_locations }}"
+    # headers:
+    #   add_headers:
+    #     - name: Strict-Transport-Security
+    #       value: "\"max-age=63072000; includeSubDomains\""
+    #       always: true
+servers_hr:
+  - core:
+      listen:
+        - address: "0.0.0.0"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+        - address: "[::]"
+          port: 443
+          default_server: false
+          ssl: true
+          http2: true
+      server_name: "{{ hr_host }}"
+    locations: "{{ nginx_hr_locations }}"
+http_templates:
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/default.conf
+    config:
+      core:
+        client_max_body_size: 50m
+      ssl:
+        certificate: "{{ cert_file }}"
+        certificate_key: "{{ cert_key }}"
+        ciphers:
+          - HIGH
+          - "!aNull"
+          - "!MD5"
+        conf_command: Protocol TLSv1.2
+        prefer_server_ciphers: false
+        protocols:
+          - TLSv1.2
+          - TLSv1.3
+      proxy:
+        set_header:
+          - field: X-Forwarded-For
+            value: $proxy_add_x_forwarded_for
+          - field: X-Forwarded-Proto
+            value: $scheme
+          - field: X-Fowarded-Host
+            value: $host
+          - field: Host
+            value: $http_host
+          - field: User-Agent
+            value: $http_user_agent
+          - field: X-Real-IP
+            value: $remote_addr
+        buffering: false
+      log:
+        access:
+          - path: /var/log/nginx/access.log
+            format: main
+            buffer: 1m
+            gzip: 5
+            flush: 10h
+            if: $status
+        format:
+          - name: main
+            format: |
+              '$remote_addr - $remote_user [$time_local] "$request" '
+              '$status $body_bytes_sent "$http_referer" '
+              '"$http_user_agent" "$http_x_forwarded_for"'
+        error_log:
+          file: /var/log/nginx/error.log
+          level: notice
+        open_log_file_cache:
+          max: 1000
+          inactive: 20s
+          min_uses: 2
+          valid: 1m
+      servers:
+        - core:
+            listen:
+              - address: "0.0.0.0"
+                port: 80
+                default_server: true
+                ssl: false
+              - address: "[::]"
+                port: 80
+                default_server: true
+                ssl: false
+          rewrite:
+            return:
+              code: 301
+              url: "https://$host$request_uri"
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/forgejo.conf
+    config:
+      upstreams: "{{ upstreams_forgejo }}"
+      servers: "{{ servers_forgejo }}"
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/synapse.conf
+    config:
+      upstreams: "{{ upstreams_synapse }}"
+      servers: "{{ servers_synapse }}"
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/wiki.conf
+    config:
+      upstreams: "{{ upstreams_wiki }}"
+      servers: "{{ servers_wiki }}"
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/cryptpad.conf
+    config:
+      upstreams: "{{ upstreams_doc }}"
+      servers: "{{ servers_doc }}"
+      ssl:
+        dhparam: /etc/dhparam.pem
+        session_cache:
+          builtin:
+            enable: true
+            size: 20480
+        session_tickets: false
+        session_timeout: 1d
+  - backup: true
+    deployment_location: /etc/nginx/conf.d/orangehrm.conf
+    config:
+      upstreams: "{{ upstreams_hr }}"
+      servers: "{{ servers_hr }}"
+nginx_confs:
+  - /etc/nginx/conf.d/default.conf
+  - /etc/nginx/conf.d/forgejo.conf
+  - /etc/nginx/conf.d/synapse.conf
+  - /etc/nginx/conf.d/wiki.conf
+  - /etc/nginx/conf.d/cryptpad.conf
+  - /etc/nginx/conf.d/orangehrm.conf
