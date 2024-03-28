@@ -22,7 +22,6 @@
 # fj_lfs_secret:
 fj_download_link: "https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-linux-amd64"
 fj_email: contact@hierarch.live
-fj_image: "codeberg.org/forgejo/forgejo"
 fj_mailer_from: "noreply@hierarch.live"
 smtp_port: "587"
 smtp_host: "smtp.mailgun.org"
