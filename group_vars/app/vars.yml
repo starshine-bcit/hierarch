@@ -22,33 +22,19 @@
 # fj_lfs_secret:
 fj_download_link: "https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-linux-amd64"
 fj_email: contact@hierarch.live
-fj_version: "1.21.6-0-amd64"
 fj_image: "codeberg.org/forgejo/forgejo"
 fj_mailer_from: "noreply@hierarch.live"
-fj_host: "git.hierarch.live"
-fj_ssh_port: "1001"
-fj_http_port: "7001"
 smtp_port: "587"
 smtp_host: "smtp.mailgun.org"
 smtp_type: "smtp+starttls"
 domain_name: app.hierarch.live
-oidc_url: "https://{{ kc_public_hostname }}/realms/hierarch/.well-known/openid-configuration"
-oidc_realm_url: "https://{{ kc_public_hostname }}/realms/hierarch"
-oidc_id: forgejo
-mx_config_dir: "/etc/matrix-synapse/conf.d"
 mx_user: hr-synapse
 turn_allowed_peer_ip: "104.219.236.22"
-wk_home_dir: "/srv/wikijs"
-wk_base_dir: "{{ wk_home_dir }}/wiki"
 kc_name: keycloak
-doc_home_dir: "/opt/cryptpad"
-doc_base_dir: "{{ doc_home_dir }}/doc"
-doc_version: "5.7.0"
-doc_repo: "https://github.com/cryptpad/cryptpad.git"
-doc_sso_repo: "https://github.com/cryptpad/sso"
-doc_admin_keys: "[\"[hr-cryptpad@docs.hierarch.live/Wv-xZAQ3H8+0VNaAifjgiDbiK9JyZj-H4UlXJ4Q1Gjw=]\"]"
 runner_download: "https://code.forgejo.org/forgejo/runner/releases/download/v3.0.0/forgejo-runner-3.0.0-linux-amd64"
 runner_verify_download: "https://code.forgejo.org/forgejo/runner/releases/download/v3.0.0/forgejo-runner-3.0.0-linux-amd64.asc"
 runner_verify_fingerprint: "EB114F5E6C0DC2BCDD183550A4B61A2DC5923710"
-runner_dir: /opt/runner
-hr_base_dir: "/opt/orangehrm"
+wk_db_name: wikijs
+wk_db_user: hrwikijs
+mx_db_user: hrsynapse
+mx_db_name: synapse

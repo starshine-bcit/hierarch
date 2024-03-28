@@ -1,6 +1,4 @@
 ---
-db_hostname: localhost
-db_is_local: true
 db_databases:
   - name: forgejo
     user: "{{ fj_db_user }}"
@@ -28,9 +26,3 @@ db_databases:
     public_schema: false
 postgres_remote_cert_file: "/etc/letsencrypt/live/{{ domain_name }}/cert.pem"
 postgres_remote_key_file: "/etc/letsencrypt/live/{{ domain_name }}/privkey.pem"
-postgres_local_cert_file: /etc/postgresql/15/main/cert.pem
-postgres_local_key_file: /etc/postgresql/15/main/privkey.pem
-wk_db_name: wikijs
-wk_db_user: hrwikijs
-mx_db_user: hrsynapse
-mx_db_name: synapse

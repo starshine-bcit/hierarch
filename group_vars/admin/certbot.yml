@@ -1,11 +1,9 @@
 ---
 admin_email: fey.sasha@gmail.com
-server_names:
-  - "{{ domain_name }}"
 certs:
   - domains:
       - "{{ domain_name }}"
-      - "hierarch.live"
+      - "{{ root_domain }}"
 stop_services:
   - nginx
 cert_file: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"

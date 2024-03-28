@@ -41,8 +41,3 @@ kc_groups:
     synapse_user: "true"
   forgejo_admin:
     forgejo_user: "true"
-hp_repo: "https://github.com/gethomepage/homepage.git"
-hp_version: "v0.8.8"
-hp_home_dir: "/opt/homepage"
-hp_base_dir: "{{ hp_home_dir }}/hp"
-yarn_bin: "/usr/local/bin/yarn"

@@ -1,8 +1,4 @@
 ---
-borg_before_backup:
-  - echo "Starting a backup"
-borg_after_backup:
-  - echo "Finished a backup."
 borg_source_dirs:
   - /etc/nginx
   - /etc/letsencrypt

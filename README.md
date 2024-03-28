@@ -18,12 +18,6 @@ With the exception of the mail server, each one has nginx, certbot, ufw, and pos
 
 The so-called admin server is an identity provider, hosting Keycloak.
 
-This server, in it's current configuration, is also responsible for hosting and mirroring the automated backups from the other servers. The backups are designed in this fashion:
-
-1. Each server has it's own Borg archive on the backup (admin) server, which it write to daily. An arbitrary number of daily, weekly, and monthly backups are retained.
-2. Daily, the backup server mirrors an encrypted tgz of each archive to some cloud provider (not implemented in POC). Alternately, a provider with borg support could be used, then a separate backup location specified in the borgmatic config.
-3. Weekly, it is intended that someone rsyncs each borg archive to a rotating external drive, which should be stored in a secure location.
-
 The admin server hosts a dashboard which is meant to act as a homepage for users, making it easier to access the various services.
 
 Spec for POC:
@@ -56,6 +50,14 @@ The app server hosts all the other services which are part of Hierarch. Services
 - OrangeHRM
 
 It is worth noting that OrangeHRM only supports specific versions of MySQL or MariaDB, so it has a companion database container.
+
+This server, in it's current configuration, is also responsible for hosting the automated backups from the other servers. Ideally this would be a dedicated machine/service.
+
+The backups are designed in this fashion:
+
+1. Each server has it's own Borg archive on the backup (app) server, which it write to daily. An arbitrary number of daily, weekly, and monthly backups are retained.
+2. Daily, the backup server mirrors an encrypted tgz of each archive to some cloud provider (not implemented in POC). Alternately, a provider with borg support could be used, then a separate backup location specified in the borgmatic config.
+3. Weekly, it is intended that someone rsyncs each borg archive to a rotating external drive, which should be stored in a secure location.
 
 Spec for POC:
 

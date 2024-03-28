@@ -1,6 +1,6 @@
 ---
 server_names:
-  - "{{ fj_host }}"
+  - "{{ domain_name }}"
 admin_email: fey.sasha@gmail.com
 certs:
   - domains:
