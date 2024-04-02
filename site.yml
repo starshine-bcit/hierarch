@@ -1,6 +1,7 @@
 ---
 - name: Unlock ssh key
   hosts: localhost
+  tags: always
   gather_facts: false
   tasks:
     - name: Unlock SSH key "{{ ssh_key_file | expandvars }}"
@@ -13,16 +14,23 @@
       no_log: true
 - name: Configure admin server
   hosts: admin
+  tags: admin
   tasks:
     - name: Include admin_setup.yml tasks
       ansible.builtin.import_tasks: tasks/admin_setup.yml
+      tags: admin
     - name: Sleep for 30 to ensure keycloak is started
       ansible.builtin.pause:
         seconds: 30
+      tags: admin
     - name: Include kc_realm.yml tasks
       ansible.builtin.import_tasks: tasks/kc_realm.yml
+      tags:
+        - admin
+        - config
 - name: Configure mail server
   hosts: mail
+  tags: mail
   tasks:
     - name: Give mailcow role
       ansible.builtin.import_role:
@@ -42,11 +50,13 @@
       become: true
 - name: Setup app server
   hosts: app
+  tags: app
   tasks:
     - name: Include app_setup.yml tasks
       ansible.builtin.import_tasks: tasks/app_setup.yml
 - name: Clean up
   hosts: localhost
+  tags: always
   gather_facts: false
   tasks:
     - name: Lock SSH key "{{ ssh_key_file | expandvars }}"

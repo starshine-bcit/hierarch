@@ -6,6 +6,7 @@
 - name: Install docker-ce role
   ansible.builtin.import_role:
     name: haxorof.docker_ce
+  tags: install
 - name: Give letsencryptnginx role
   ansible.builtin.import_role:
     name: sfey.hierarch.letsencryptnginx
@@ -40,6 +41,7 @@
   become: true
 - name: Configure backup target user
   become: true
+  tags: setup
   block:
     - name: Create borg target user
       ansible.builtin.user:
